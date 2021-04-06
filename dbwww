@@ -1,0 +1,144 @@
+#!/usr/bin/env sh
+
+######################################################################
+# @author      : pday
+#
+# @description : uses rofi/dmenu to search or browse the www
+######################################################################
+
+# ### find dmenu command or error out 
+# ### creater uses rofi. most people use dmenu with extra options. 
+# ### checking for DMENURUN as a varaible
+DMENURUN=${DMENURUN:-dmenu}
+
+### command -v
+which $DMENURUN > /dev/null || DMENURUN=${DMENURUN:-rofi}
+which $DMENURUN > /dev/null || echo "No rofi/dmenu found, either install or add dmenu/rofi-path to \$PATH\!"
+
+
+### found this on WWW, unable to find and refere to source
+urlencode(){
+  declare str="$*"
+  declare encoded=""
+  declare i c x
+  for ((i=0; i<${#str}; i++ )); do
+    c=${str:$i:1}
+    case "$c" in
+      [-_.~a-zA-Z0-9] ) x="$c" ;;
+      * ) printf -v x '%%%02x' "'$c";;
+    esac
+    encoded+="$x"
+  done
+  echo "$encoded"
+}
+
+
+INPUT=$(printf "[Cancel]\n\
+dg\t-\tDuckDuckGo\n\
+yt\t-\tYouTube\n\
+eb\t-\teBay\n\
+ebk\t-\teBay-Kleinanzeigen\n\
+az\t-\tAmazonDE\n\
+dc\t-\tDict.cc\n\
+aw\t-\tArch-Wiki\n\
+wp\t-\tWikipedia English\n\
+wd\t-\tWikipedia Deutsch\n\
+gg\t-\tGoogle\n\
+gs\t-\tGoogle Scholar\n \
+fb\t-\tfacebook\n\
+gh\t-\tGitHub\n\
+dw\t-\tDetect Wifiportal\n\
+dvb\t-\tDVB Verbindungsauskunft\ 
+opt\t-\tOnePiece-Tube\n\
+bs\t-\tBoerse\n\
+sj\t-\tSerienJunkies.org\n\
+kc\t-\tKohlchan/b/\n\
+gdq\t-\tGamesDoneQuick Schedule\n\
+tb\t-\tTabliss\n\
+"| $DMENURUN )
+
+
+SEARCHKEY=$(echo $INPUT | awk {'print $1'})
+SEARCHTERM="$(echo $INPUT | awk {'$1=""; print $0'} | awk '{$1=$1};1')"
+
+[[ $INPUT == *-*  ]] && unset SEARCHTERM
+
+declare -A SEARCHDICT
+
+SEARCHDICT[dg]="https://duckduckgo.com/?q=$SEARCHTERM&kai=1&kaf=1&kaa=bd93f9&k9=50fa7b&kx=f1fa8c&k8=f8f8f2&ka=p&k7=282a36&km=l&ko=s&kae=t&ku=-1&kw=n&kj=282a36&ks=m&kt=p&ky=44475a&kf=1q%3D%3Fk7%3D282a36%26k8%3Df8f8f2%26&t=h_&ia=web"
+SEARCHDICT[gg]="https://www.google.de/search?q=$SEARCHTERM"
+SEARCHDICT[gs]="https://scholar.google.de/scholar?hl=de&as_sdt=0%2C5&q=$SEARCHTERM&btnG="
+SEARCHDICT[opt]="http://onepiece-tube.com/"
+SEARCHDICT[gdq]="https://gamesdonequick.com/schedule"
+SEARCHDICT[dvb]="https://www.dvb.de/de-de/fahrplan/verbindungsauskunft/"
+SEARCHDICT[tb]="https://web.tabliss.io/"
+SEARCHDICT[kc]="https://kohlchan.net/b/"
+SEARCHDICT[sj]="http://serienjunkies.org/"
+SEARCHDICT[bs]="https://boerse.im/"
+SEARCHDICT[dw]="https://detectportal.firefox.com/"
+SEARCHDICT[az]="https://amazon.de/s?k=$SEARCHTERM"
+SEARCHDICT[gh]="https://github.com/pdaynoe?tab=repositories"
+SEARCHDICT[fb]="https://facebook.com"
+SEARCHDICT[wd]="https://de.wikipedia.org/w/index.php?search=$SEARCHTERM&title=Special:Search"
+SEARCHDICT[wp]="https://en.wikipedia.org/w/index.php?search=$SEARCHTERM&title=Special:Search"
+SEARCHDICT[aw]="https://wiki.archlinux.org/?search=$SEARCHTERM"
+SEARCHDICT[dc]="https://dict.cc/?s=$SEARCHTERM"
+SEARCHDICT[yt]="https://youtube.com/results?search_query=$SEARCHTERM"
+SEARCHDICT[eb]="https://ebay.de/sch/i.html?_from=R40&_trksid=m570.l1313&_nkw=$SEARCHTERM"
+SEARCHDICT[ebk]="https://ebay-kleinanzeigen.de/s-Dresden/$SEARCHTERM/k0l"
+
+# ### make dictionary with searchengines per yt (f.e. yt - youtube.com)
+$BROWSER "$(echo ${SEARCHDICT[$SEARCHKEY]})"
+
+# case $INPUT in
+#     "[Cancel]"|"")
+#        unset INPUT SEARCHTERM URL
+#        exit
+#        ;;
+#     *)
+#        declare URL=$(urlencode $INPUT)
+#        $BROWSER "https://duckduckgo.com/?q=$URL&kai=1&kaf=1&kaa=bd93f9&k9=50fa7b&kx=f1fa8c&k8=f8f8f2&ka=p&k7=282a36&km=l&ko=s&kae=t&ku=-1&kw=n&kj=282a36&ks=m&kt=p&ky=44475a&kf=1q%3D%3Fk7%3D282a36%26k8%3Df8f8f2%26&t=h_&ia=web"
+#        ;;
+# esac
+
+
+
+# [[ ! $INPUT == *-*  ]] && SEARCHTERM="$(echo $INPUT | awk {'$1=""; print $0'} | awk '{$1=$1};1')"
+# [[ $INPUT == *-*  ]] && SEARCHKEY=${INPUT%-*} ; unset SEARCHTERM
+
+
+
+# if [[ $INPUT == *-*  ]]; then
+#    SEARCHKEY=${INPUT%-*}
+#    unset SEARCHTERM
+# else
+#    SEARCHTERM="$(echo $INPUT | awk {'$1=""; print $0'} | awk '{$1=$1};1')"
+# fi
+
+# rpi\t-\thttp://padpi.ddns.net/
+# rpg\t-\thttps://www.online-adventur.es/apps/the-boring-rpg/#
+
+# ### strapps off searchterm of input 
+# SEARCHTERM="$(echo $INPUT | awk {'$1=""; print $0'} | awk '{$1=$1};1')"
+# [[ $INPUT == *$(echo $SEARCHTERM )* ]] && unset SEARCHTERM
+
+
+
+# [[ -v ${SEARCHDICT[$SEARCHKEY]} ]] && $BROWSER ${SEARCHDICT[$SEARCHKEY]} || declare URL=$(urlencode $INPUT); $BROWSER "https://duckduckgo.com/?q=$URL&kai=1&kaf=1&kaa=bd93f9&k9=50fa7b&kx=f1fa8c&k8=f8f8f2&ka=p&k7=282a36&km=l&ko=s&kae=t&ku=-1&kw=n&kj=282a36&ks=m&kt=p&ky=44475a&kf=1q%3D%3Fk7%3D282a36%26k8%3Df8f8f2%26&t=h_&ia=web"
+
+
+
+
+# SEARCHDICT[yt]="https://youtube.com/results?search_query="
+# SEARCHDICT[eb]="https://www.ebay.de/sch/i.html?_from=R40&_trksid=m570.l1313&_nkw="
+# SEARCHDICT[ebk]="https://www.ebay-kleinanzeigen.de/s-01099/"
+
+# SEARCHDICT[dg]="https://duckduckgo.com/?q=$SEARCHTERM"
+
+# " | rofi -dmenu -show 'Search the Web:')
+# rpi\t-\thttp://padpi.ddns.net/
+# rpg\t-\thttps://www.online-adventur.es/apps/the-boring-rpg/#
+
+# [[ $INPUT == *$(echo $SEARCHTERM )* ]] && unset SEARCHTERM
+# [[ ! $INPUT == *-*  ]] && SEARCHTERM=$(echo $INPUT | awk {'$1=""; print $0'} | awk '{$1=$1};1')
+# [[ $INPUT == *-*  ]] && unset SEARCHTERM
