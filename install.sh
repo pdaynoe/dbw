@@ -1,6 +1,13 @@
-[[ -f $PWD/dbwww ]] || echo "Error: No dbwww file found"; exit
+#!/usr/bin/env bash
+######################################################################
+# @author      : pdaynoe
+# @description : simple install script for dbw
+######################################################################
 
-[[ -d /usr/local/bin ]] && sudo cp $PWD/dbwww /usr/local/bin
-[[ -d /usr/bin ]]       && sudo cp $PWD/dbwww /usr/bin
 
-cp  ${XDG_CONFIG_HOME:?$HOME/.config}
+[ -f "$PWD"/dbw ] || echo "Error: No dbw file found"; exit 1
+
+# [ -d /usr/local/bin ] && sudo cp "$PWD"/dbw /usr/local/bin
+[ -d /usr/bin ]   && sudo cp "$PWD"/dbw /usr/bin
+
+[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/dbwdb.db"  ] ||  cp "$PWD"/dbwdb.db  "${XDG_CONFIG_HOME:-$HOME/.config}"

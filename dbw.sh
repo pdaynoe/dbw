@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 ######################################################################
 # @author      : pdaynoe
 # @requirements: base-devel, dmenu
@@ -12,7 +11,6 @@
 # ### f.e.: gg:google/dg:duckduckgo/sx:searx
 # ### all these searchengines need to be defined in the database
 # DEFKEY=dg
-
 
 
 # ### find dmenu or rofi command or error out
@@ -49,7 +47,7 @@ urlencode(){
 
 function get_dbfile() {
       # ### find suitable database file if unset
-      DBFILE="${DBFILE:-${XDG_CONFIG_HOME:-$HOME/.config}/dbwww.db}"
+      DBFILE="${DBFILE:-${XDG_CONFIG_HOME:-$HOME/.config}/dbwdb.db}"
       [ -f "$DBFILE" ] || printf "\nNo dmenu command found\!\n"
 }
 
@@ -72,6 +70,8 @@ function get_input() {
       [[ "$INPUT" == *-*  ]] && SEARCHTERM=""
 
       DBENTRY="$(awk '{if(/#/){}else{print $0}}' "$DBFILE" | grep "$SEARCHKEY")"
+      # ### failsafe: if DBENTRYS has more than 1 line
+      [ "$(echo "$DBENTRY" | wc -l)" -ge 2 ] && DBENTRY="$(echo "$DBENTRY" | head -1)"
       [ -z "$DBENTRY" ] && SEARCHTERM=$INPUT && SEARCHKEY=${DEFKEY:-dg}
 }
 
@@ -117,6 +117,7 @@ function get_goto() {
             SEARCHTERM=$(urlencode "$SEARCHTERM")
             eval "$(printf "%s" GT="$DOMAIN")"
             SEARCHEND=$(echo "$DBENTRY" | awk '{print $6}')
+            [[ "$SEARCHEND" == *-* ]] && SEARCHEND=""
             GOTO="$GT$SEARCHEND"
       # else
       fi
