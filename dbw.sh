@@ -7,29 +7,15 @@
 #                this is inspired by qutebrowser quickmark und quick search eingines
 ######################################################################
 
-# ### define searchengine if no key is specified
-# ### f.e.: gg:google/dg:duckduckgo/sx:searx
-# ### all these searchengines need to be defined in the database
-# DEFKEY=dg
+DEFKEY=dg
 
-
-# ### find dmenu or rofi command or error out
-# function get_drun() {
-#     if [ -z $(command -v rofi) ]; then
-#        DMENURUN="$(command -v rofi)" -show -mode
-#     elif [ -z $(command -v dmenu) ]; then
-#        DMENURUN=${DMENURUN:-dmenu}
-#     else
-#        printf "\nNo dmenu/rofi command found\!\n" ; exit 1
-#     fi
-# }
 
 # ### find dmenu command or error out
-# [ -z "$(command -v dmenu)" ] || printf "\nNo dmenu/rofi command found\!\n" ; exit 1
+[ -n "$(command -v dmenu)" ] || printf "\nNo dmenu/rofi command found\!\n" || exit 1
 
 
 # ### found this on WWW, unable to find and refere to source
-# ### it encodes urls
+# ### it encodes strings into urls format
 urlencode(){
   declare str="$*"
   declare encoded=""
@@ -45,18 +31,17 @@ urlencode(){
   echo "$encoded"
 }
 
-function get_dbfile() {
+
+get_dbfile() {
       # ### find suitable database file if unset
       DBFILE="${DBFILE:-${XDG_CONFIG_HOME:-$HOME/.config}/dbwdb.db}"
-      [ -f "$DBFILE" ] || printf "\nNo dmenu command found\!\n"
+      [ -f "$DBFILE" ] || printf "\nNo database found\!\n" || exit 1
 }
 
-function get_input() {
-
+get_input() {
       # ### use  awk & dmenu on supplied input, defines variable INPUT
-
-      INPUT=$(awk '{if(/#/){}else{printf ("%s\t-\t%s\n", $1, $2) }}' "$DBFILE" | dmenu -i -p "Search/Browse ")
-      [[ $INPUT == *Cancel* ]] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
+      INPUT=$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | dmenu -i -p "Search/Browse ")
+      [ "$INPUT" = "*Cancel*" ] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
       [ -z "$INPUT" ] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
 
 
@@ -67,87 +52,54 @@ function get_input() {
       # ### searchterm is unset because of the '-' (dash)
       # ### bookmark is opend instead of searchterm
       # ### no, you can't search for terms with a dash
-      [[ "$INPUT" == *-*  ]] && SEARCHTERM=""
+      [[ "$INPUT" == *-* ]] && SEARCHTERM=""
 
-      DBENTRY="$(awk '{if(/#/){}else{print $0}}' "$DBFILE" | grep "$SEARCHKEY")"
+      DBENTRY="$(awk '{if(/#/){}else{print $0}}' "$DBFILE" | grep "^$SEARCHKEY ")"
       # ### failsafe: if DBENTRYS has more than 1 line
       [ "$(echo "$DBENTRY" | wc -l)" -ge 2 ] && DBENTRY="$(echo "$DBENTRY" | head -1)"
-      [ -z "$DBENTRY" ] && SEARCHTERM=$INPUT && SEARCHKEY=${DEFKEY:-dg}
+      [ -z "$DBENTRY" ] && SEARCHTERM=$INPUT && SEARCHKEY=${DEFKEY:-dg} && DBENTRY="$(awk '{if(/#/){}else{print $0}}' "$DBFILE" | grep "^$SEARCHKEY ")"
+
 }
 
 
-function get_goto() {
-      # ### use grep & awk on $SEARCH-variables to find URL
-      # ### TODO: find way to only use awk, as this decreases requirements
-
-      # ### handle no key in database entry
-      # ### if no key found, and no default searchengine is set
-      # ### then duckduckgo is used as default engine
-      # ### qutebrwoser automatically uses a default search engine
-      # ### this is for all the other browsers out there!
-      # if [ -n "$DBENTRY" ]; then
-      #      DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s", $2,$3) }}' )";
-      #      [ -n "$SEARCHTERM" ] && eval "$(printf "%s" GOTO="$DOMAIN"/"$(urlencode "$SEARCHTERM")")"
-      #      # [ -n "$SEARCHTERM" ] && GT="$DOMAIN$(echo "$DBENTRY" | awk '{print $5}')";
-      #      # eval "$(echo GOTO="$DOMAIN"/"$(urlencode "$SEARCHTERM")")"
-      # # elif [ -z "$DEFSEARCHENGINE" ]; then
-      # #      SEARCHKEY=dg;
-      # #      DOMAIN="$(grep "$SEARCHKEY" "$DBFILE" | awk '{if(/#/){}else{printf ("https://%s.%s", $2, $3) }}')"
-      # else
-      #      DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s", $2,$3) }}' )";
-      #      [ -n "$SEARCHTERM" ] && eval "$(printf "%s" GOTO="$DOMAIN"/"$(urlencode "$SEARCHTERM")")"
-      #      # GOTO="$(urlencode "$SEARCHTERM")"
-      # fi
 
 
-
-
-
-      # DBENTRY="$(awk '{if(/#/){}else{print $0}}' "$DBFILE" | grep "$SEARCHKEY")"
-      # [ -z "$DBENTRY" ] && SEARCHTERM=$INPUT && SEARCHKEY=${DEFKEY:-dg}
-
-      if [ -z "$SEARCHTERM" ]; then
+goto_bmark() {
             BMARK="$(echo "$DBENTRY" | awk '{print $4}')"
-            [[ "$BMARK" == *-*  ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s", $2,$3) }}' )" \
+            [ "$BMARK" = '-' ] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s", $2,$3) }}' )" \
                   || DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$4) }}' )";
             GOTO="$DOMAIN"
+}
 
-      elif [ -n "$SEARCHTERM" ] ; then
+
+full_search() {
             DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$5) }}' )";
             SEARCHTERM=$(urlencode "$SEARCHTERM")
             eval "$(printf "%s" GT="$DOMAIN")"
             SEARCHEND=$(echo "$DBENTRY" | awk '{print $6}')
-            [[ "$SEARCHEND" == *-* ]] && SEARCHEND=""
+            [ "$SEARCHEND" = '-' ] && SEARCHEND=""
             GOTO="$GT$SEARCHEND"
-      # else
-      fi
-
-      # [ -n "$SEARCHTERM" ] && SEARCHTERM="$(urlencode "$SEARCHTERM")" ; eval "$(printf "%s" GOTO="$DOMAIN")"
-      # GOTO="$GT$SEARCHEND"
-
-      # DOMAIN="$(grep "$SEARCHKEY" "$DBFILE" | awk '{if(/#/){}else{printf ("https://%s.%s/", $2, $3) }}')"
-      # DOMAIN="$(grep $SEARCHKEY $DBFILE) | awk  '{print $2}'.$(grep $SEARCHKEY $DBFILE) | awk  '{print $3}'"
-
-      # declare URL=$(urlencode $INPUT)
-      # # $BROWSER "https://duckduckgo.com/?q=$URL"
-      # $BROWSER "https://duckduckgo.com/?q=$URL&kai=1&kaf=1&kaa=bd93f9&k9=50fa7b&kx=f1fa8c&k8=f8f8f2&ka=p&k7=282a36&km=l&ko=s&kae=t&ku=-1&kw=n&kj=282a36&ks=m&kt=p&ky=44475a&kf=1q%3D%3Fk7%3D282a36%26k8%3Df8f8f2%26&t=h_&ia=web"
-
-      # ### defines GOTO variable, depending on input/databse/database entrys
-      # GOTO="$URL"
 }
 
-# ### this is the way
-# [ -z "$DMENURUN" ] && get_drun;
-# [ -z "$DBFILE" ] && get_dbfile;
-# [ -z "$INPUT"  ] && get_input; # this uses dmenu
 
-# ### this is the way
-# [ -z "$DMENURUN" ] && get_drun;
+run() {
+      # ### the actual run function
+      BROWSER=${BROWSER:-xdg-open}
+      "$BROWSER" "$GOTO" && unset SEARCHKEY SEARCHTERM SEARCHEND DBENTRY DOMAIN GOTO && exit 0
+}
+
+
+# ### main
 [ -z "$DBFILE" ] && get_dbfile;
-[ -z "$INPUT"  ] && get_input; # this uses dmenu
 
-get_goto;
+get_input; # this uses dmenu
+if [ -z "$SEARCHTERM" ]; then
+      # [ "$SEARCHKEY" = "$DEFKEY" ] && full_search ; run
+      goto_bmark
+      run
 
-# ### this is the actual run!
-BROWSER=${BROWSER:-xdg-open}
-"$BROWSER" "$GOTO"
+elif [ -n "$SEARCHTERM" ] ; then
+      full_search
+      run
+fi
+
