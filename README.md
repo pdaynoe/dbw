@@ -13,6 +13,7 @@ If no database.db file exist in $XDG_CONFIG_HOME, the example-databse will be co
 dmenu, bash, gawk (other versions might work too - not tested!), grep
 
 # Installation
-A small installation.sh script exists. It uses /usr/bin instead of /usr/loval/bin.
+A small installation.sh script exists. It uses /usr/bin instead of /usr/local/bin.
 Please check the script before launching it, and edit it to your needs.
+Or just clone and copy or symlink the file into a $PATH folder.
 
