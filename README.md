@@ -2,7 +2,7 @@
 ### This Readme needs to be updated ###
 ## Fullname:Dmenu-Database-for-Bookmark-and-Searchengines-WWW-Wrapper-Wrench
 ### short: ddbbswww ### 
-### even shorter: **++ dbw ++ ** ### 
+### even shorter: ** ++ dbw ++ ** ### 
 
 A dmenu script using a unified database-like file to either use bookmarks or search the _www_\.
 This script uses a database file as a bookmark or searchengine lookup for your browser.
