@@ -7,8 +7,8 @@
 #                this is inspired by qutebrowser quickmark und quick search eingines
 ######################################################################
 
-DEFKEY=dg
-BROWSER=brave
+# DEFKEY=dg
+# BROWSER=brave
 
 
 # ### find dmenu command or error out
