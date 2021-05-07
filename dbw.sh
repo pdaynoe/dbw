@@ -67,8 +67,8 @@ get_input() {
 
 goto_bmark() {
             BMARK="$(echo "$DBENTRY" | awk '{print $4}')"
-            [ "$BMARK" = '-' ] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s.%s", $2,$3) }}' )" \
             # [ "$BMARK" = '-' ] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s", $2,$3) }}' )" \
+            [ "$BMARK" = '-' ] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s.%s", $2,$3) }}' )" \
                   || DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$4) }}' )";
             GOTO="$DOMAIN"
 }

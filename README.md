@@ -1,5 +1,6 @@
 # dbw
-### This Readme needs to be updated ###
+## This Readme needs further reworking ###
+# Description:
 ## Fullname:Dmenu-Database-for-Bookmark-and-Searchengines-WWW-Wrapper-Wrench
 ### short: ddbbswww ### 
 ### even shorter: ** dbw ** ### 
