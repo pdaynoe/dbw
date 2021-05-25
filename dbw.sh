@@ -42,7 +42,7 @@ get_dbfile() {
 get_input() {
       # ### use  awk & dmenu on supplied input, defines variable INPUT
       INPUT=$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | dmenu -i -p "Search/Browse ")
-      [ "$INPUT" = "*Cancel*" ] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
+      [[ "$INPUT" == *Cancel* ]] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
       [ -z "$INPUT" ] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
 
 
