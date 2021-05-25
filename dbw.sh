@@ -7,12 +7,13 @@
 #                this is inspired by qutebrowser quickmark und quick search eingines
 ######################################################################
 
+
+
 # DEFKEY=dg
 # BROWSER=brave
 
-
 # ### find dmenu command or error out
-[ -n "$(command -v dmenu)" ] || printf "\nNo dmenu/rofi command found\!\n" || exit 1
+[ -n "$(command -v dmenu)" ] || printf "\nNo dmenu command found\!\n" || exit 1
 
 
 # ### found this on WWW, unable to find and refere to source
