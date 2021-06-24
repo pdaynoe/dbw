@@ -9,7 +9,7 @@
 
 
 
-# DEFKEY=dg
+DEFKEY=bv
 # BROWSER=brave
 
 # ### find dmenu command or error out
