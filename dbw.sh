@@ -9,8 +9,9 @@
 
 
 
-DEFKEY=bv
+DEFKEY=dg
 # BROWSER=brave
+BROWSER=librewolf
 
 # ### find dmenu command or error out
 [ -n "$(command -v dmenu)" ] || printf "\nNo dmenu command found\!\n" || exit 1
@@ -35,25 +36,24 @@ urlencode(){
 
 
 get_dbfile() {
-      # ### find suitable database file if unset
+      # ### find suitable database file if DBFILE is unset
       DBFILE="${DBFILE:-${XDG_CONFIG_HOME:-$HOME/.config}/dbwdb.db}"
       [ -f "$DBFILE" ] || printf "\nNo database found\!\n" || exit 1
 }
 
 get_input() {
-      # ### use  awk & dmenu on supplied input, defines variable INPUT
+      # ### use awk & dmenu on supplied input, defines variable INPUT
       INPUT=$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | dmenu -i -p "Search/Browse ")
       [[ "$INPUT" == *Cancel* ]] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
       [ -z "$INPUT" ] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
-
 
       SEARCHKEY="$(echo "$INPUT" | awk '{print $1}')"
       SEARCHTERM="$(echo "$INPUT" | awk '{$1=""; print $0}' | awk '{$1=$1};1')"
 
       # ### this is failsafe for if you tab through suggestions
       # ### searchterm is unset because of the '-' (dash)
-      # ### bookmark is opend instead of searchterm
-      # ### no, you can't search for terms with a dash
+      # ### bookmark is opened instead of searchterm
+      # ### simply said: no, you can't search for terms with a dash
       [[ "$INPUT" == *-* ]] && SEARCHTERM=""
 
       DBENTRY="$(awk '{if(/#/){}else{print $0}}' "$DBFILE" | grep "^$SEARCHKEY ")"
