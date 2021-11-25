@@ -1,15 +1,12 @@
-# ### this file is read the dbw, do not add empty lines!
-#
-# dg    duckduckgo.com               ""             
-# this columns of this database are:
-# key 	name 	domain.ending 	bookmark 	search-url
-# key can be seen as duckduckgo bang
-# ### database for dbw
-#
+# ### this file is read by dbw, do not add empty lines!
+# ###
 # the columns of this database are:
-# key 	name                    domain.ending 	bookmark         begin-search-url                     end-search-url
-# key can be seen as duckduckgo bang
+# key 	name 	domain.ending 	bookmark 	search-url   end-of-search-url
 #
+# key can be seen as duckduckgo bang
+# bmark can be used to access a configured page instaed of using doing a search querry
+# ### database for dbw
+# ###
 [Cancel] 
 dg          duckduckgo                   com      -              /?q=$SEARCHTERM                       -
 gg          google                       com      -              /search?q=$SEARCHTERM                 -
@@ -22,4 +19,4 @@ wp          en.wikipedia                 org      -              /w/index.php?se
 aw          wiki.archlinux               org      -              /?search=$SEARCHTERM                  -
 dc          dict                         cc       -              /?s=$SEARCHTERM                       -
 yt          youtube                      com      - 	         /results?search_query=$SEARCHTERM     -
-fb          facebook                     com      notification   -                                     -
+fb          facebook                     com      -              -                                     -

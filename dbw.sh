@@ -8,10 +8,8 @@
 ######################################################################
 
 
-
 DEFKEY=dg
-# BROWSER=brave
-BROWSER=librewolf
+# BROWSER=librewolf
 
 # ### find dmenu command or error out
 [ -n "$(command -v dmenu)" ] || printf "\nNo dmenu command found\!\n" || exit 1
@@ -44,8 +42,8 @@ get_dbfile() {
 get_input() {
       # ### use awk & dmenu on supplied input, defines variable INPUT
       INPUT=$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | dmenu -i -p "Search/Browse ")
-      [[ "$INPUT" == *Cancel* ]] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
-      [ -z "$INPUT" ] && unset INPUT SEARCHTERM SEARCHKEY URL &&  exit 0
+      [[ "$INPUT" == *Cancel* ]] && unset INPUT SEARCHTERM SEARCHKEY && exit 0
+      [ -z "$INPUT" ] && unset INPUT SEARCHTERM SEARCHKEY &&  exit 0
 
       SEARCHKEY="$(echo "$INPUT" | awk '{print $1}')"
       SEARCHTERM="$(echo "$INPUT" | awk '{$1=""; print $0}' | awk '{$1=$1};1')"
@@ -62,7 +60,6 @@ get_input() {
       [ -z "$DBENTRY" ] && SEARCHTERM=$INPUT && SEARCHKEY=${DEFKEY:-dg} && DBENTRY="$(awk '{if(/#/){}else{print $0}}' "$DBFILE" | grep "^$SEARCHKEY ")"
 
 }
-
 
 
 
@@ -85,11 +82,13 @@ full_search() {
 }
 
 
+
 run() {
       # ### the actual run function
       BROWSER=${BROWSER:-xdg-open}
       "$BROWSER" "$GOTO" && unset SEARCHKEY SEARCHTERM SEARCHEND DBENTRY DOMAIN GOTO && exit 0
 }
+
 
 
 # ### main
