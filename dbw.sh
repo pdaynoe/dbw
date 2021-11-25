@@ -43,6 +43,11 @@ get_input() {
       # ### use awk & dmenu on supplied input, defines variable INPUT
       INPUT=$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | dmenu -i -p "Search/Browse ")
       [[ "$INPUT" == *Cancel* ]] && unset INPUT SEARCHTERM SEARCHKEY && exit 0
+
+      # ### open url immediately if it contains http(s) or www
+      [[ "$INPUT" == *http* ]] && goto_www
+      [[ "$INPUT" == *www*  ]] && goto_www
+
       [ -z "$INPUT" ] && unset INPUT SEARCHTERM SEARCHKEY &&  exit 0
 
       SEARCHKEY="$(echo "$INPUT" | awk '{print $1}')"
@@ -61,6 +66,10 @@ get_input() {
 
 }
 
+goto_www(){
+      BROWSER=${BROWSER:-xdg-open}
+      "$BROWSER" "$INPUT" && unset SEARCHKEY SEARCHTERM SEARCHEND DBENTRY DOMAIN GOTO && exit 0
+}
 
 
 goto_bmark() {
