@@ -8,7 +8,9 @@
 ######################################################################
 
 
-DEFKEY=dg
+# ### duckduckgo is implemented as default searchengine
+# ### other DEFKEY may be used to set different default searchengine
+# DEFKEY=bv
 # BROWSER=librewolf
 
 # ### find dmenu command or error out
@@ -104,8 +106,8 @@ run() {
 [ -z "$DBFILE" ] && get_dbfile;
 
 get_input; # this uses dmenu
+
 if [ -z "$SEARCHTERM" ]; then
-      # [ "$SEARCHKEY" = "$DEFKEY" ] && full_search ; run
       goto_bmark
       run
 
