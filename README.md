@@ -1,7 +1,7 @@
 # dbw
-## This Readme needs further reworking ###
+## Use at own risk! ###
 # Description:
-## Fullname:Dmenu-Database-for-Bookmark-and-Searchengines-WWW-Wrapper-Wrench
+## Fullname:Dmenu-Database-for-Bookmark-and-Searchengines-Web-Wrapper-Wrench
 ### short: ddbbswww ### 
 ### even shorter: dbw ### 
 
@@ -17,3 +17,6 @@ A small installation.sh script exists. It uses /usr/bin instead of /usr/local/bi
 Please check the script before launching it, and edit it to your needs.
 Or just clone and copy or symlink the file into a $PATH folder.
 
+# Usage:
+Type in your search query for a direct search with duckduckgo or type in a bang to use one of the bookmarks or search engines of the database.
+For database entries including a bookmark and a search engine, using no search term will open the bookmark.
