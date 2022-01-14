@@ -20,3 +20,4 @@ Or just clone and copy or symlink the file into a $PATH folder.
 # Usage:
 Type in your search query for a direct search with duckduckgo or type in a bang to use one of the bookmarks or search engines of the database.
 For database entries including a bookmark and a search engine, using no search term will open the bookmark.
+If an entry has no search engine it will only open the bookmark even with an emitted search term.
