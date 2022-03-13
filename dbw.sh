@@ -8,7 +8,7 @@
 ######################################################################
 # ### duckduckgo is implemented as default searchengine
 # ### other DEFKEY may be used to set different default searchengine
-# DEFKEY=bv
+DEFKEY=ps
 # BROWSER=librewolf
 
 # ### find dmenu command or error out
