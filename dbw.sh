@@ -6,14 +6,15 @@
 #                if no searchterm is supplied it may use a "bookmark"
 #                this is inspired by qutebrowser quickmark und quick search eingines
 ######################################################################
-# ### duckduckgo is implemented as default searchengine
 # ### other DEFKEY may be used to set different default searchengine
-DEFKEY=ps
-# BROWSER=librewolf
+DEFKEY=sx
+### sx key is now defaulting to localhost, other searxng instances need to have a different key.
+# BROWSER=firefox
 
 # ### find dmenu command or error out
-[ -n "$(command -v dmenu)" ] || printf "\nNo dmenu command found\!\n" || exit 1
-
+# DMENU=rofi
+DMENU="wofi --show dmenu"
+# [ -n "$(command -v $DMENU)" ] || printf "\nNo $DMENU command found\!\n" || exit 1
 
 # ### found this on WWW, unable to find source
 # ### it encodes strings into urls format
@@ -41,7 +42,7 @@ get_dbfile() {
 
 get_input() {
       # ### use awk & dmenu on supplied input, defines variable INPUT
-      INPUT=$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | dmenu -i -p "Search/Browse")
+      INPUT=$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | $DMENU -i -p "Search/Browse")
       [[ "$INPUT" == *Cancel* ]] && unset INPUT SEARCHTERM SEARCHKEY && exit 0
       [ -z "$INPUT" ] && unset INPUT SEARCHTERM SEARCHKEY && exit 0
 
@@ -70,12 +71,14 @@ goto_bmark() {
             BMARK="$(echo "$DBENTRY" | awk '{print $4}')"
             [ "$BMARK" = '-' ] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s.%s", $2,$3) }}' )" \
                   || DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$4) }}' )";
+            [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s", $2) }}' )";
             GOTO="$DOMAIN"
 }
 
 
 full_search() {
             DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$5) }}' )";
+            [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s%s", $2,$5) }}' )";
             SEARCHTERM=$(urlencode "$SEARCHTERM")
             eval "$(printf "%s" GT="$DOMAIN")"
             SEARCHEND=$(echo "$DBENTRY" | awk '{print $6}')
