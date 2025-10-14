@@ -7,9 +7,11 @@
 #                this is inspired by qutebrowser quickmark und quick search eingines
 ######################################################################
 # ### other DEFKEY may be used to set different default searchengine
+# DEFKEY=dg
 DEFKEY=sx
 ### sx key is now defaulting to localhost, other searxng instances need to have a different key.
-# BROWSER=firefox
+# BROWSER=librewolf
+# BROWSER=xdg-open
 
 # ### find dmenu command or error out
 # DMENU=rofi
@@ -70,7 +72,8 @@ goto_www(){
 goto_bmark() {
             BMARK="$(echo "$DBENTRY" | awk '{print $4}')"
             [ "$BMARK" = '-' ] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s.%s", $2,$3) }}' )" \
-                  || DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$4) }}' )";
+                  || DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s.%s%s", $2,$3,$4) }}' )";
+                  # || DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$4) }}' )";
             [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s", $2) }}' )";
             GOTO="$DOMAIN"
 }
@@ -78,7 +81,8 @@ goto_bmark() {
 
 full_search() {
             DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$5) }}' )";
-            [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s%s", $2,$5) }}' )";
+            [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s%s", $2,$5) }}' )";
+            # [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s%s", $2,$5) }}' )";
             SEARCHTERM=$(urlencode "$SEARCHTERM")
             eval "$(printf "%s" GT="$DOMAIN")"
             SEARCHEND=$(echo "$DBENTRY" | awk '{print $6}')
