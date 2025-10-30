@@ -39,7 +39,7 @@ urlencode(){
 get_dbfile() {
       # ### find suitable database file if DBFILE is unset
       export DBFILE="${DBFILE:-${XDG_CONFIG_HOME:-$HOME/.config}/dbwdb.db}"
-      [ -f "$DBFILE" ] || printf "\nNo database found\!\n" || exit 1
+      [ -f "$DBFILE" ] || { printf "\nNo database found\!\n" ; exit 1 ; }
 }
 
 get_input() {
@@ -80,9 +80,8 @@ goto_bmark() {
 
 
 full_search() {
-            DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$5) }}' )";
-            [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s%s", $2,$5) }}' )";
-            # [[ "$SEARCHKEY" = 'sx' ]] && DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s%s", $2,$5) }}' )";
+            [[ "$SEARCHKEY" = 'sx' ]] && { DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s%s", $2,$5) }}' )"; } \
+                                      || { DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$5) }}' )"; }
             SEARCHTERM=$(urlencode "$SEARCHTERM")
             eval "$(printf "%s" GT="$DOMAIN")"
             SEARCHEND=$(echo "$DBENTRY" | awk '{print $6}')
