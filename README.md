@@ -5,9 +5,9 @@
 ### short: ddbbswww ### 
 ### even shorter: dbw ### 
 
-A dmenu script using a unified database-like file to either use bookmarks or search the _www_\.
+A dmenu script using a unified database-like file to either use bookmarks or search the _www_.
 This script uses a database file as a bookmark or searchengine lookup for your browser.
-If no database.db file exist in $XDG_CONFIG_HOME, the example-databse will be copied to mentioned location if using the installation script
+If no database.db file exist in $XDG_CONFIG_HOME, the example-database will be copied to mentioned location if using the installation script
  
 # Dependencies:
 dmenu, bash, gawk (other versions might work too - not tested!), grep
@@ -21,3 +21,12 @@ Or just clone and copy or symlink the file into a $PATH folder.
 Type in your search query for a direct search with duckduckgo or type in a bang to use one of the bookmarks or search engines of the database.
 For database entries including a bookmark and a search engine, using no search term will open the bookmark.
 If an entry has no search engine it will only open the bookmark even with an emitted search term.
+
+# Improvements Made:
+- Added proper error handling and validation
+- Improved input parsing and validation
+- Better database file checking
+- Enhanced error messages
+- More robust installation script
+- Fixed potential issues with variable substitution
+- Added explicit exit statements for cleaner execution
