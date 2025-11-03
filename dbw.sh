@@ -83,10 +83,12 @@ full_search() {
             [[ "$SEARCHKEY" = 'sx' ]] && { DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s%s", $2,$5) }}' )"; } \
                                       || { DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$5) }}' )"; }
             SEARCHTERM=$(urlencode "$SEARCHTERM")
-            eval "$(printf "%s" GT="$DOMAIN")"
             SEARCHEND=$(echo "$DBENTRY" | awk '{print $6}')
             [[ "$SEARCHEND" = '-' ]] && SEARCHEND=""
-            GOTO="$GT$SEARCHEND"
+            # Properly substitute $SEARCHTERM in the URL
+            GOTO="${DOMAIN/\$SEARCHTERM/$SEARCHTERM}$SEARCHEND"
+            # Fallback in case substitution didn't work
+            [[ "$GOTO" == *"\$SEARCHTERM"* ]] && GOTO="${DOMAIN/\$SEARCHTERM/$SEARCHTERM}$SEARCHEND"
 }
 
 
