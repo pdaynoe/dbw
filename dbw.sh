@@ -22,9 +22,11 @@ urlencode() {
     str="$1"
     encoded=""
     i=0
-    str_len=$(expr length "$str")
-    while [ "$i" -lt "$str_len" ]; do
-        c=$(expr substr "$str" $((i + 1)) 1)
+    # Use POSIX-compatible method for string length and substring
+    # We'll use a different approach that avoids expr
+    while [ "$i" -lt "$(printf '%s' "$str" | wc -c)" ]; do
+        # Get character at position i+1 (1-indexed)
+        c="$(printf '%s' "$str" | cut -c $((i + 1)))"
         case "$c" in
             [a-zA-Z0-9._~-] ) x="$c" ;;
             ' ' ) x='%20' ;;
@@ -160,10 +162,10 @@ full_search() {
     # Properly substitute $SEARCHTERM in the URL using POSIX-compatible method
     # Since POSIX doesn't support advanced string substitution, we'll use sed
     # Check if the domain contains literal $SEARCHTERM pattern
-    if echo "$DOMAIN" | grep -q "\\\\$SEARCHTERM"; then
+    if echo "$DOMAIN" | grep -q "\\$SEARCHTERM"; then
         # Use sed to replace literal $SEARCHTERM with actual search term
-        GOTO="$(echo "$DOMAIN" | sed "s/\\\\\$SEARCHTERM/$SEARCHTERM/g")$SEARCHEND"
-    elif echo "$DOMAIN" | grep -q '\$SEARCHTERM'; then
+        GOTO="$(echo "$DOMAIN" | sed "s/\\\$SEARCHTERM/$SEARCHTERM/g")$SEARCHEND"
+    elif echo "$DOMAIN" | grep -q "\$SEARCHTERM"; then
         # Use sed to replace literal $SEARCHTERM with actual search term
         GOTO="$(echo "$DOMAIN" | sed "s/\$SEARCHTERM/$SEARCHTERM/g")$SEARCHEND"
     else

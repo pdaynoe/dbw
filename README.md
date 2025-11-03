@@ -22,6 +22,29 @@ Type in your search query for a direct search with duckduckgo or type in a bang 
 For database entries including a bookmark and a search engine, using no search term will open the bookmark.
 If an entry has no search engine it will only open the bookmark even with an emitted search term.
 
+# Database Format:
+The database file follows this format (columns separated by whitespace):
+```
+# key  name  domain.ending  bookmark  search-url   end-of-search-url
+dg          duckduckgo                   com      -              /?q=$SEARCHTERM                       -
+gg          google                       com      -              /search?q=$SEARCHTERM                 -
+gh          github                       com      -              /search?q=$SEARCHTERM                 -
+```
+
+Column meanings:
+1. **Key**: Short identifier (like "dg" for duckduckgo) - used in searches
+2. **Name**: Display name for the search engine/bookmark
+3. **Domain ending**: TLD (com, org, etc.) for constructing URLs
+4. **Bookmark**: Optional bookmark path (use "-" if no bookmark)
+5. **Search URL**: URL template with $SEARCHTERM placeholder for search queries
+6. **End of search URL**: Additional URL parameters to append to search results
+
+# Examples:
+- `dg just a test` → searches DuckDuckGo for "just a test"
+- `gh openhands` → searches GitHub for "openhands" 
+- `wp` → opens Wikipedia homepage (no search term)
+- `fb` → opens Facebook homepage (no search term)
+
 # Improvements Made:
 - Added proper error handling and validation
 - Improved input parsing and validation
@@ -30,3 +53,6 @@ If an entry has no search engine it will only open the bookmark even with an emi
 - More robust installation script
 - Fixed potential issues with variable substitution
 - Added explicit exit statements for cleaner execution
+- Fully POSIX compliant (works with dash, ash, etc.)
+- Corrected URL encoding for special characters
+- Fixed $SEARCHTERM variable replacement
