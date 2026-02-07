@@ -15,7 +15,9 @@ DEFKEY=sx
 
 # ### find dmenu command or error out
 # DMENU=rofi
-DMENU="wofi --show dmenu"
+# DMENU="wofi --show dmenu"
+DMENU="rofi -dmenu -show-icons"
+
 # [ -n "$(command -v $DMENU)" ] || printf "\nNo $DMENU command found\!\n" || exit 1
 
 # ### found this on WWW, unable to find source
