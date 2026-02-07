@@ -14,7 +14,8 @@ DEFKEY=sx
 # BROWSER=xdg-open
 
 # Menu configuration
-DMENU="wofi --show dmenu"
+# DMENU="wofi --show dmenu"
+DMENU="rofi -dmenu -show-icons"
 
 # ### found this on WWW, unable to find source
 # ### it encodes strings into urls format
@@ -30,7 +31,7 @@ urlencode() {
         case "$c" in
             [a-zA-Z0-9._~-] ) x="$c" ;;
             ' ' ) x='%20' ;;
-            * ) 
+            * )
                 # Use printf with proper quoting for POSIX compatibility
                 x=$(printf '%%%.2x' "'$c")
                 ;;
@@ -57,7 +58,7 @@ get_dbfile() {
 get_input() {
     # Use awk & dmenu on supplied input, defines variable INPUT
     INPUT="$(awk '{if(/#/){}else{printf ("%s\t\t-\t%s\n", $1, $2) }}' "$DBFILE" | $DMENU -i -p "Search/Browse")"
-    
+
     # Handle cancel or empty input
     case "$INPUT" in
         *Cancel*)
@@ -93,14 +94,14 @@ get_input() {
 
     # Look up the database entry
     DBENTRY="$(grep -m 1 -e "^$SEARCHKEY " "$DBFILE")"
-    
+
     # Perform defaultkey search for nonexisting searchkey
     if [ -z "$DBENTRY" ]; then
         SEARCHTERM="$INPUT"
         SEARCHKEY="${DEFKEY:-dg}"
         DBENTRY="$(grep -m 1 -e "^$SEARCHKEY " "$DBFILE")"
     fi
-    
+
     # Validate that we found a valid entry
     if [ -z "$DBENTRY" ]; then
         printf "\nError: Could not find entry for key '%s'\n" "$SEARCHKEY" >&2
@@ -119,20 +120,20 @@ goto_www() {
 # Handle bookmark access
 goto_bmark() {
     BMARK="$(echo "$DBENTRY" | awk '{print $4}')"
-    
+
     if [ "$BMARK" = "-" ]; then
         DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s.%s", $2,$3) }}' )"
     else
         DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("http://%s.%s%s", $2,$3,$4) }}' )"
     fi
-    
+
     # Special handling for searxng instances
     case "$SEARCHKEY" in
         sx)
             DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s", $2) }}' )"
             ;;
     esac
-    
+
     GOTO="$DOMAIN"
 }
 
@@ -147,18 +148,18 @@ full_search() {
             DOMAIN="$(echo "$DBENTRY" | awk '{if(/#/){}else{printf ("https://%s.%s%s", $2,$3,$5) }}' )"
             ;;
     esac
-    
+
     # Encode search term
     SEARCHTERM="$(urlencode "$SEARCHTERM")"
-    
+
     # Get search end part
     SEARCHEND="$(echo "$DBENTRY" | awk '{print $6}')"
-    
+
     # Handle empty search end
     if [ "$SEARCHEND" = "-" ]; then
         SEARCHEND=""
     fi
-    
+
     # Properly substitute $SEARCHTERM in the URL using POSIX-compatible method
     # Since POSIX doesn't support advanced string substitution, we'll use sed
     # Check if the domain contains literal $SEARCHTERM pattern
@@ -181,7 +182,7 @@ run() {
         printf "\nError: No URL to open\n" >&2
         exit 1
     fi
-    
+
     # Open in browser
     BROWSER="${BROWSER:-xdg-open}"
     "$BROWSER" "$GOTO"
@@ -195,10 +196,10 @@ main() {
     if [ -z "$DBFILE" ]; then
         get_dbfile
     fi
-    
+
     # Get user input
     get_input  # this uses dmenu/rofi
-    
+
     # Process based on whether there's a search term
     if [ -z "$SEARCHTERM" ]; then
         goto_bmark
