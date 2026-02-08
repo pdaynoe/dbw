@@ -16,7 +16,7 @@ DEFKEY=sx
 # Menu configuration
 # DMENU="wofi --show dmenu"
 # DMENU="rofi -dmenu -show-icons"
-DMENU="rofi -dmenu"
+DMENU="rofi -dmenu -no-show-icons"
 
 # ### found this on WWW, unable to find source
 # ### it encodes strings into urls format
